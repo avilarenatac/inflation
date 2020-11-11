@@ -1,0 +1,113 @@
+---
+title: "Inflation - Brazil"
+author: "Renata Avila"
+output: pdf_document
+header-includes:
+  - \usepackage{setspace}\onehalfspacing
+  - \usepackage{multirow, booktabs, threeparttable, caption, makecell}
+  - \setlength{\parsep}{10pt}
+  - \setlength\parindent{24pt}
+fontsize: 12pt
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(echo = TRUE, fig.width = 6, fig.height = 3.2, fig.align = "center")
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+library(tidyverse)
+library(lubridate)
+library(here)
+theme_set(theme_minimal())
+```
+
+```{r source, include=FALSE}
+# source code
+source(here("code/plot_functions.R"), encoding = "UTF-8")
+source(here("code/analysis_2020.R"), encoding = "UTF-8")
+```
+
+
+## Aggregates
+
+The goal of this report is to provide an outlook on inflation numbers and patterns in Brazil, spanning the last decade and also placing particular focus on the year of 2020.
+
+\vspace{1cm}
+
+```{r echo = FALSE, warning = FALSE, fig.width = 6, fig.height = 4}
+plot_agg("monthly", start_date = "2010-01-01")
+```
+
+```{r echo = FALSE, warning = FALSE, fig.width = 6, fig.height = 4}
+plot_agg("last_12", start_date = "2010-01-01")
+```
+
+\vspace{1cm}
+
+The last graph provides some interesting insights. Firstly, inflation levels soared up in 2015-2016, closing 2015 with an aggregate above 10%. This surge can be traced back to a national economic crisis and decreased credibility in the Central Bank. The process was later reversed from 2017 onwards, as the CPI regained a stable trajectory and even appears to have settled at lower levels on average.
+
+Secondly, the COVID-19 pandemic seems to have had an overall deflationary effect on the level of prices in the country, consistently with the experience of other emergind countries. Aggregate 12-month inflation reached an historic low in April 2020. However, the effect appears to have been reversed, at least in the short-run. So far, for months following 2Q/20, prices, on average, have regained their pre-pandemic levels. 
+
+\vspace{1cm}
+```{r echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 4}
+plot_agg("last_12", start_date = "2017-01-01")
+```
+
+In this way, we will have a closer look at what goods and services are driving current inflation patterns.
+\vspace{1cm}
+
+## CPI by groups
+
+The following graphs provide and overview of the Bazilian CPI's components at the first level of disaggregation. Values for group aggregates are included from 2012 to the last available date (Oct 2020). 
+
+\vspace{1cm}
+
+```{r echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 4}
+plot_group("1")
+```
+\vspace{1cm}
+
+```{r echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 4}
+plot_group("11")
+```
+
+\vspace{1cm}
+As shown in the figures, food prices on average, and in particular Food at Home, reached their highest levels for both September and October this year, considering all figures since 2012. Economists have considered that this inflationary pressure largely reflects currency depreciation - the BRL is the worst performing currency among emerging markets. As the BRL depreciates against the USD, food imports are more expensive and the competitiveness of Brazilian food exports increases.
+
+```{r echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 4}
+plot_group("5")
+```
+
+
+```{r echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 4}
+plot_group("8")
+```
+
+On the other hand, Transportation and Education prices have remained largely deflationary and below historical averages throughout the year. Traffic in many cities has not resumed its pre-pandemic levels, as businesses shut down and laid-off workers, and many others continue do adopt home-office policies. Social distancing restrictions have also hindered the normalization of schooling activities in many states.
+
+## Other trends
+
+```{r echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 4}
+plot_group("2")
+```
+
+```{r echo = FALSE, warning = FALSE, fig.width = 9, fig.height = 6}
+plot_group("3")
+```
+
+```{r echo = FALSE, warning = FALSE, fig.width = 9, fig.height = 6}
+plot_group("4")
+```
+
+```{r echo = FALSE, warning = FALSE, fig.width = 9, fig.height = 6}
+plot_group("6")
+```
+
+
+```{r echo = FALSE, warning = FALSE, fig.width = 9, fig.height = 6}
+plot_group("7")
+```
+
+```{r echo = FALSE, warning = FALSE, fig.width = 9, fig.height = 6}
+plot_group("9")
+```
+
