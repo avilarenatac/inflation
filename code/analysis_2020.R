@@ -13,7 +13,6 @@ library(sidrar)
 library(tidyverse)
 library(lubridate)
 library(RColorBrewer)
-library(viridis)
 
 
 
@@ -65,7 +64,7 @@ ggplot(incidence_table %>%
   labs(x = "", y = "Incidence", 
        title = "IPCA (monthly) - Incidence by group")
 
-ggsave(paste0("./output/", "cpi_brazil_groups.png"), width = 12, height = 8, units = "in")
+ggsave(paste0("./output/", "cpi_brazil_groups.png"), width = 7, height = 4, units = "in")
 
 
 # Other color options
@@ -107,4 +106,4 @@ ggplot(tab_agg, aes(x = Date, y = value)) +
           legend.title = element_blank())
 
    
-ggsave(paste0("./output/", "cpi_brazil_aggregates.png"), width = 12, height = 8, units = "in")
+ggsave(paste0("./output/", "cpi_brazil_aggregates.png"), width = 7, height = 4, units = "in")

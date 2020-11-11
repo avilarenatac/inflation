@@ -4,7 +4,7 @@ library(tidyverse)
 library(lubridate)
 library(data.table)
 library(stringr)
-library(RColorBrewer)
+library(viridis)
 
 
 # Import CPI aggregates since 2012 ----------------------------------------
@@ -60,8 +60,7 @@ plot_agg <- function(variable, start_date) {
     ggplot(., aes(x = Date, y = Value)) +
     scale_x_date(breaks = "6 months", date_labels = "%b %y") +
     geom_line(col = "#003B77") +
-    theme_set(theme_minimal() +
-                theme(axis.text.x = element_text(angle = 60))) +
+    theme(axis.text.x = element_text(angle = 60)) +
     labs(x = '', y = '', title = plot_title)
   
   return(p)
@@ -107,10 +106,7 @@ plot_group <- function (group) {
   
 }
 
-plot_group("1")
-plot_group("11")
-plot_group("8")
-
+#plot_group("1")
 
 
 # Plot CPI by group and year ----------------------------------------------
@@ -149,9 +145,9 @@ plot_group_year <- function (group) {
   
 }
 
-plot_group_year("1")
-plot_group_year("6")
-plot_group_year("5")
+#plot_group_year("1")
+#plot_group_year("6")
+#plot_group_year("5")
 
 
 # store full tables in .csv as input files? Shiny app would only subset them
