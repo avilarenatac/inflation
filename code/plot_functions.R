@@ -7,13 +7,16 @@ library(stringr)
 library(viridis)
 
 
-# Import CPI aggregates since 2012 ----------------------------------------
-ipca <- sidrar::get_sidra(api = "/t/1737/n1/all/v/63,2265/p/last%20142/d/v63%202,v2265%202")
+# Import CPI aggregates --------------------------------------------------
+ipca <- sidrar::get_sidra(api = "/t/1737/n1/all/v/63,2265/p/all/d/v63%202,v2265%202")
+
+# Since 2009
+#ipca <- sidrar::get_sidra(api = "/t/1737/n1/all/v/63,2265/p/last%20142/d/v63%202,v2265%202")
 
 
 # Import CPI groups since 2012
-ipca_group         <- sidrar::get_sidra(api = "/t/1419/n1/all/v/63/p/all/c315/7170,7171,7432,7445,7486,7558,7625,7660,7712,7766,7786/d/v63%202")
-ipca_group_2020     <- sidrar::get_sidra(api = "/t/7060/n1/all/v/63/p/all/c315/7170,7171,7432,7445,7486,7558,7625,7660,7712,7766,7786/d/v63%202")
+ipca_group        <- sidrar::get_sidra(api = "/t/1419/n1/all/v/63/p/all/c315/7170,7171,7432,7445,7486,7558,7625,7660,7712,7766,7786/d/v63%202")
+ipca_group_2020   <- sidrar::get_sidra(api = "/t/7060/n1/all/v/63/p/all/c315/7170,7171,7432,7445,7486,7558,7625,7660,7712,7766,7786/d/v63%202")
 ipca_group_all    <- data.table::rbindlist(list(ipca_group, ipca_group_2020))
 
 
@@ -35,24 +38,24 @@ ipca_group_all <- ipca_group_all %>%
 
 
 # Plot aggregates ---------------------------------------------------------
-plot_agg <- function(variable, start_date) {
+plot_agg <- function(variable, start_date, end_date) {
   
   ipca_table <- ipca %>%
     select(Date = `Mês (Código)`,
            Variable = Variável, 
            Value = Valor) %>%
-    mutate(Date = parse_date(Date, format = "%Y%m")) 
+    mutate(Date = parse_date(Date, format = "%Y%m")) %>%
+    filter(Date >= start_date,
+           Date <= end_date)
   
   
   if (variable == "monthly") {
-    df <- ipca_table %>% filter(Variable == "IPCA - Variação mensal",
-                                Date >= start_date)
+    df <- ipca_table %>% filter(Variable == "IPCA - Variação mensal")
     plot_title <- "CPI - Monthly"
   }
   
   else {
-    df <- ipca_table %>% filter(Variable ==  "IPCA - Variação acumulada em 12 meses",
-                                Date >= start_date)
+    df <- ipca_table %>% filter(Variable ==  "IPCA - Variação acumulada em 12 meses")
     plot_title <- "CPI - Last 12 months"
   }
   
@@ -68,11 +71,11 @@ plot_agg <- function(variable, start_date) {
 }
 
 plot_agg("last_12", "2018-01-01")
-plot_agg("monthly", "2012-01-01")
+plot_agg("monthly", "1999-01-01", "2005-01-01")
 
 
 # Plot CPI by group (category) -------------------------------------------------
-plot_group <- function (group) {
+plot_group <- function (group, since) {
   
   if (str_length(group) == 2) {
     df <- ipca_group_all %>%
@@ -90,9 +93,10 @@ plot_group <- function (group) {
              Variable = Variável, 
              Value = Valor,
              category) %>%
-        mutate(Date = parse_date(Date, format = "%Y%m"),
-               Year = factor(lubridate::year(Date)))
-
+        mutate(Date = parse_date(Date, format = "%Y%m")) %>%
+        filter(year(Date) >= since) %>%
+        mutate(Year = factor(lubridate::year(Date)))
+        
    
   p <- ggplot(df, aes(x = month(Date), y = Value)) +
         geom_line(aes(col = Year)) +
@@ -106,11 +110,11 @@ plot_group <- function (group) {
   
 }
 
-#plot_group("1")
+plot_group("1", 2017)
 
 
 # Plot CPI by group and year ----------------------------------------------
-plot_group_year <- function (group) {
+plot_group_year <- function (group, since) {
   
   if (str_length(group) == 2) {
     df <- ipca_group_all %>%
@@ -128,9 +132,9 @@ plot_group_year <- function (group) {
            Variable = Variável, 
            Value = Valor,
            category) %>%
-    mutate(Date = parse_date(Date, format = "%Y%m"),
-           Year = factor(lubridate::year(Date)))
-  
+    mutate(Date = parse_date(Date, format = "%Y%m")) %>%
+    filter(year(Date) >= since) %>%
+    mutate(Year = factor(lubridate::year(Date)))
   
   p <- ggplot(df, aes(x = month(Date), y = Value)) +
     geom_line(col = "#003B77") +
@@ -145,9 +149,6 @@ plot_group_year <- function (group) {
   
 }
 
-#plot_group_year("1")
-#plot_group_year("6")
-#plot_group_year("5")
+plot_group_year("1", 2017)
 
 
-# store full tables in .csv as input files? Shiny app would only subset them
