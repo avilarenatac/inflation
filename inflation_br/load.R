@@ -5,7 +5,7 @@ library(stringr)
 library(viridis)
 
 
-# load data ---------------------------------------------------------------
+# LOAD DATA ------------------------------------------------------------- 
 
 # Import CPI aggregates --------------------------------------------------
 ipca <- sidrar::get_sidra(api = "/t/1737/n1/all/v/63,2265/p/all/d/v63%202,v2265%202")
@@ -15,6 +15,41 @@ ipca <- sidrar::get_sidra(api = "/t/1737/n1/all/v/63,2265/p/all/d/v63%202,v2265%
 ipca_group        <- sidrar::get_sidra(api = "/t/1419/n1/all/v/63/p/all/c315/7170,7171,7432,7445,7486,7558,7625,7660,7712,7766,7786/d/v63%202")
 ipca_group_2020   <- sidrar::get_sidra(api = "/t/7060/n1/all/v/63/p/all/c315/7170,7171,7432,7445,7486,7558,7625,7660,7712,7766,7786/d/v63%202")
 ipca_group_all    <- data.table::rbindlist(list(ipca_group, ipca_group_2020))
+
+
+
+# Import inflation target series -----------------------------------------
+infl_target <- rbcb::get_series(13521)
+names(infl_target) <- c("Date", "target")
+
+date_t <- data.frame(seq(first(infl_target$Date), last(infl_target$Date) , by='1 month'))
+names(date_t) <- "Date"
+infl_target <- left_join(date_t, infl_target, by = "Date")
+
+
+infl_target <- left_join(date_t, infl_target, by = "Date")
+
+infl_target <- infl_target %>%
+  mutate(target = na.locf(target))
+infl_target <- data.table(infl_target)
+
+
+# Define upper and lower bounds for target
+infl_target[, upper := 6.5]
+infl_target[, lower := 2.5]
+
+infl_target[(year(Date) == 2017 | year(Date) == 2018), upper := 6]
+infl_target[(year(Date) == 2017 | year(Date) == 2018), lower := 3]
+
+
+infl_target[(year(Date) == 2019), upper := 5.75]
+infl_target[(year(Date) == 2019), lower := 2.75]
+
+infl_target[(year(Date) == 2020), upper := 5.5]
+infl_target[(year(Date) == 2020), lower := 2.5]
+
+infl_target[(year(Date) == 2021), upper := 5.25]
+infl_target[(year(Date) == 2021), lower := 2.25]
 
 
 
@@ -60,6 +95,7 @@ plot_agg <- function(variable, start_date, end_date) {
   
   else {
     df <- ipca_table %>% filter(Variable ==  "IPCA - Variação acumulada em 12 meses")
+    df <- left_join(df, infl_target, "Date")
     plot_title <- "CPI - Last 12 months"
   }
   
@@ -71,8 +107,10 @@ plot_agg <- function(variable, start_date, end_date) {
     labs(x = '', y = '', title = plot_title)
   
   return(p)
-  
 }
+
+plot_agg("12m", "2010-01-01", "2015-01-01")
+
 
 # Plot CPI by group (category) -------------------------------------------------
 plot_group <- function (group, since) {
@@ -94,5 +132,3 @@ plot_group <- function (group, since) {
   return(p)
   
 }
-
-#plot_group("Food and Beverages", 2012)
