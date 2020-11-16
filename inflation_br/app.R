@@ -9,6 +9,7 @@
 
 library(shiny)
 library(tidyverse)
+library(plotly)
 
 
 # source ------------------------------------------------------------------
@@ -42,7 +43,7 @@ ui <- fluidPage(
                     ), # Close sidebarPanel
             
                  mainPanel(
-                     plotOutput("plot_aggregate")
+                     plotly::plotlyOutput("plot_aggregate")
                      )
         
         ) # Close sidebarLayout
@@ -53,14 +54,14 @@ ui <- fluidPage(
               sidebarLayout(
                   sidebarPanel(
      
-                        selectInput("group", "Select CPI group",
+                        selectInput("group", "Select CPI category",
                                     choices = levels(ipca_group_all$category)),
      
                         selectInput("year", "Select first year",
                                     choices = c(2012:2020))
                   ),
      
-                mainPanel(plotOutput("plot_group"))
+                mainPanel(plotly::plotlyOutput("plot_group"))
               )
            
           )
@@ -70,37 +71,34 @@ ui <- fluidPage(
 # Define server logic 
 server <- function(input, output) {
 
-    output$plot_aggregate<- renderPlot({
-       p <- plot_agg(input$variable, input$dates[1], input$dates[2])
+    output$plot_aggregate<- plotly::renderPlotly({
         
-       if(input$show_target == TRUE) {
-           p <- p + geom_line(aes(y = target), linetype = "solid") +
-               geom_line(aes(y = upper), linetype = "dashed") +
-               geom_line(aes(y = lower), linetype = "dashed") 
-           
-           #    + scale_linetype_manual(labels("Center", "Upper bound", "Lower bound"),
-           #                         values = c("Center" = "solid", "Upper bound" = "dashed",
-           #                                      "Lower bound" = "dashed"))
-           
-       }
+       p <- plot_agg(input$variable, input$dates[1], input$dates[2], input$show_target)
+        
        
-        p
-  
+        ggplotly(p, tooltip = "y") %>%
+            layout(xaxis = list(showline = TRUE),
+                   yaxis = list(showline = TRUE))
+        
     })
     
-    # Fix reactive - two inputs
-    # Alternative: add a plot button
     
-  #  plot_group_reac <- eventReactive(c(input$group, input$year), {
+    output$plot_group <- plotly::renderPlotly({
         
-  #      plot_group(input$group, input$year)
-  #  })
-    
-    
-    output$plot_group <- renderPlot({
-      plot_group(input$group, input$year)
+      ggplotly(p = plot_group(input$group, input$year), tooltip = "y") %>%
+                   layout(xaxis = list(showline = TRUE),
+                   yaxis = list(showline = TRUE))
     })
 }
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
+
+# Fix reactive - two inputs
+# Alternative: add a plot button
+
+#  plot_group_reac <- eventReactive(c(input$group, input$year), {
+
+#      plot_group(input$group, input$year)
+#  })
