@@ -6,3 +6,4 @@ This repository contains code for importing and plotting inflation data from Bra
 - `README.md`: this file, summarizes the contents of the repository
 - `/code`: contains scripts for importing, processing and creating data visualizations
 - `/output`: contains plots and other report files
+- `/inflation_br`: shiny app for visualizing the series
