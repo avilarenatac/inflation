@@ -159,6 +159,9 @@ df <- ipca_group_all %>%
 
 
 
+
+
+
 # Plot CPI by group (category) -------------------------------------------------
 plot_group <- function (group, since) {
   
