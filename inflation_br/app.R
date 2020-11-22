@@ -50,6 +50,21 @@ ui <- fluidPage(
      ), # Close tabpanel
      
             
+     tabPanel("Incidence",
+              sidebarLayout(
+                sidebarPanel(
+                  
+                  selectInput("date_contrib", "Select date",
+                              choices = sort(levels(as.factor(df$Date)), decreasing = TRUE)),
+                  
+                  width = 3
+                ),
+                
+                mainPanel(plotly::plotlyOutput("plot_contrib"))
+              )
+              
+     ),
+     
          tabPanel("Categories",
               sidebarLayout(
                   sidebarPanel(
@@ -57,14 +72,16 @@ ui <- fluidPage(
                         selectInput("group", "Select CPI category",
                                     choices = levels(ipca_group_all$category)),
      
-                        selectInput("year", "Select first year",
+                        selectInput("since", "Select first year",
                                     choices = c(2012:2020))
                   ),
      
                 mainPanel(plotly::plotlyOutput("plot_group"))
               )
-           
+          
           )
+
+
     )   
 )
 
@@ -78,19 +95,32 @@ server <- function(input, output) {
        p <- plot_agg(input$variable, input$dates[1], input$dates[2], input$show_target)
         
        
-        ggplotly(p, tooltip = "y") %>%
+        ggplotly(p, tooltip = "y", width = 700, height = 450) %>%
             layout(xaxis = list(showline = TRUE),
                    yaxis = list(showline = TRUE))
         
     })
     
     
+    output$plot_contrib <- plotly::renderPlotly({
+      ggplotly(p = plot_group_contrib(input$date_contrib), tooltip = "y", 
+               width = 700, height = 450) %>%
+        layout(xaxis = list(showline = TRUE),
+               yaxis = list(showline = TRUE)) %>%
+        hide_legend()
+      
+    })
+    
+    
     output$plot_group <- plotly::renderPlotly({
         
-      ggplotly(p = plot_group(input$group, input$year), tooltip = "y") %>%
+      ggplotly(p = plot_group(input$group, input$since), tooltip = "y",
+               height = 450, width = 700) %>%
                    layout(xaxis = list(showline = TRUE),
-                   yaxis = list(showline = TRUE))
+                          yaxis = list(showline = TRUE))
     })
+    
+
 }
 
 
