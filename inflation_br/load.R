@@ -40,64 +40,64 @@ ipca_group_all <- ipca_group_all %>%
                                "Education" = "8.Educação",
                                "Communication" =  "9.Comunicação"))
 
-# Import inflation target series -----------------------------------------
-#infl_target <- rbcb::get_series(13521)
-# names(infl_target) <- c("Date", "target")
-# 
-# 
-# # Corrections -------------------------------------------------------------
-# 
-# # Turn year targets into monthly series
-# date_t <- data.frame(seq(first(infl_target$Date), last(infl_target$Date) , by='1 month'))
-# names(date_t) <- "Date"
-# infl_target <- left_join(date_t, infl_target, by = "Date")
-# 
-# # Define inflation target for all months of the year
-# infl_target <- infl_target %>%
-#                  mutate(target = na.locf(target))
-# 
-# infl_target <- data.table(infl_target) # makes following operations faster 
-# 
-# 
-# # Define upper and lower bounds for yearly target as announced by the Central Bank
-# infl_target[, upper := 6.5]
-# infl_target[, lower := 2.5]
-# 
-# infl_target[(year(Date) == 2006 | year(Date) == 2018), upper := 6]
-# 
-# infl_target[(year(Date) == 2017 | year(Date) == 2018), upper := 6]
-# infl_target[(year(Date) == 2017 | year(Date) == 2018), lower := 3]
-# 
-# 
-# infl_target[(year(Date) == 2019), upper := 5.75]
-# infl_target[(year(Date) == 2019), lower := 2.75]
-# 
-# infl_target[(year(Date) == 2020), upper := 5.5]
-# infl_target[(year(Date) == 2020), lower := 2.5]
-# 
-# infl_target[(year(Date) == 2021), upper := 5.25]
-# infl_target[(year(Date) == 2021), lower := 2.25]
-# 
-# infl_target[(year(Date) == 2005), upper := 7]
-# infl_target[(year(Date) == 2005), lower := 2]
-# 
-# infl_target[(year(Date) == 2004), upper := 8]
-# infl_target[(year(Date) == 2004), lower := 3]
-# 
-# infl_target[(year(Date) == 2003), upper := 1.5]
-# infl_target[(year(Date) == 2003), lower := 6.5]
-# 
-# infl_target[(year(Date) == 2002), upper := 1.5]
-# infl_target[(year(Date) == 2002), lower := 5.5]
-# 
-# infl_target[(year(Date) == 2001), upper := 2]
-# infl_target[(year(Date) == 2001), lower := 6]
-# 
-# 
-# infl_target[(year(Date) == 2000), upper := 4]
-# infl_target[(year(Date) == 2000), lower := 8]
-# 
-# 
+#Import inflation target series -----------------------------------------
+infl_target <- rbcb::get_series(13521)
+names(infl_target) <- c("Date", "target")
+
+
+# Corrections -------------------------------------------------------------
+
+# Turn year targets into monthly series
+date_t <- data.frame(seq(first(infl_target$Date), last(infl_target$Date) , by='1 month'))
+names(date_t) <- "Date"
+infl_target <- left_join(date_t, infl_target, by = "Date")
+
+# Define inflation target for all months of the year
+infl_target <- infl_target %>%
+                 mutate(target = na.locf(target))
+
+infl_target <- data.table(infl_target) # makes following operations faster
+
+
+# Define upper and lower bounds for yearly target as announced by the Central Bank
+infl_target[, upper := 6.5]
+infl_target[, lower := 2.5]
+
+infl_target[(year(Date) == 2006 | year(Date) == 2018), upper := 6]
+
+infl_target[(year(Date) == 2017 | year(Date) == 2018), upper := 6]
+infl_target[(year(Date) == 2017 | year(Date) == 2018), lower := 3]
+
+
+infl_target[(year(Date) == 2019), upper := 5.75]
+infl_target[(year(Date) == 2019), lower := 2.75]
+
+infl_target[(year(Date) == 2020), upper := 5.5]
+infl_target[(year(Date) == 2020), lower := 2.5]
+
+infl_target[(year(Date) == 2021), upper := 5.25]
+infl_target[(year(Date) == 2021), lower := 2.25]
+
+infl_target[(year(Date) == 2005), upper := 7]
+infl_target[(year(Date) == 2005), lower := 2]
+
+infl_target[(year(Date) == 2004), upper := 8]
+infl_target[(year(Date) == 2004), lower := 3]
+
+infl_target[(year(Date) == 2003), upper := 1.5]
+infl_target[(year(Date) == 2003), lower := 6.5]
+
+infl_target[(year(Date) == 2002), upper := 1.5]
+infl_target[(year(Date) == 2002), lower := 5.5]
+
+infl_target[(year(Date) == 2001), upper := 2]
+infl_target[(year(Date) == 2001), lower := 6]
+
+
+infl_target[(year(Date) == 2000), upper := 4]
+infl_target[(year(Date) == 2000), lower := 8]
+
+
 
 # Plot aggregates ---------------------------------------------------------
 plot_agg <- function(variable, start_date, end_date, target = FALSE) {
@@ -145,7 +145,6 @@ plot_agg <- function(variable, start_date, end_date, target = FALSE) {
   
 }
 
-#plot_agg("monthly", "2010-01-01", "2014-01-01")
 plot_agg("12m", "2010-01-01", "2018-01-01", target = TRUE)
 
 
@@ -183,13 +182,6 @@ plot_group <- function (group, since) {
 plot_group("Food and Beverages", 2015)
 
 
-df <- ipca_group_all %>% 
-  select(Date = `Mês (Código)`,
-         Variable = Variável, 
-         Value = Valor,
-         category) %>%
-  mutate(Date = parse_date(Date, format = "%Y%m"))
-
 
 plot_group_contrib <- function(date) {
   
@@ -219,4 +211,65 @@ plot_group_contrib <- function(date) {
 }
 
 plot_group_contrib("2020-04-01")
+
+# Import inflation cores series --------------------------------------------------
+# 11427 # EX0,  27839 # EX3, 4466  # MS, # 16122 # DP, # 28750 # P55
+ipca_cores <- rbcb::get_series(code = list(core_series = 11427, core_series = 27839, core_series= 4466,
+                                           core_series = 16122, core_series = 28750))
+names(ipca_cores) <- c("EX0", "EX3", "MS", "DP", "P55")
+
+
+# Nest and add sum of last 12m --------------------------------------------------------
+coreslist <- rbindlist(ipca_cores, idcol = TRUE)
+cores_nest <- coreslist %>% group_by(.id) %>% nest()
+
+
+core_12m <- function(x) {
+  x %>%
+    mutate(core_12m = rollsum(x[, "core_series"], k = 12, align = 'right', fill = 0))
+  
+}
+
+cores_all <- cores_nest %>% 
+  mutate(series_12m = map(.x = data, .f = core_12m))
+
+
+# Unnest and plot graph function ------------------------------------------
+cores_df <- unnest(cores_all, series_12m)
+
+plot_cores <- function(start_date, end_date, show_target) {
+  
+
+  if(show_target == TRUE) {
+    cores_df <- left_join(cores_df, infl_target, c("date" = "Date"))
+  }
+
+  p <-cores_df %>% 
+        filter(date >= start_date, date <= end_date)  %>%
+        
+        ggplot(aes(x = date, y = core_12m)) +
+        geom_line(aes(col = .id)) + 
+        scale_color_manual(values=c("darkblue", "#9E1B32", "#58595B", "#482677FF", "#7B68EE")) +
+        scale_x_date(breaks = "6 months", date_labels = "%b %y") +
+        theme(axis.text.x = element_text(angle = 60), legend.title = element_blank()) +
+        labs(x = '', y = '', title = "CPI cores (12m)")
+  
+  if(show_target == TRUE) {
+  p <- p + geom_line(aes(y = target), linetype = "solid") +
+    geom_line(aes(y = upper), linetype = "dashed") +
+    geom_line(aes(y = lower), linetype = "dashed") 
+  }
+
+  return(p)
+}
+
+
+plot_cores("2015-01-01", "2019-12-01", show_target = TRUE)
+
+
+
+# Add: filters for each core series
+# Add: calculate series with mean of cores
+# Add: option to display target series
+# NEW: possibly - turn imported data into input script and source it from top of this script
 
