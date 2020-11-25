@@ -10,6 +10,7 @@
 library(shiny)
 library(tidyverse)
 library(plotly)
+library(shinycssloaders)
 
 
 # source ------------------------------------------------------------------
@@ -45,7 +46,7 @@ ui <- fluidPage(
                     ), # Close sidebarPanel
             
                  mainPanel(
-                     plotly::plotlyOutput("plot_aggregate")
+                     withSpinner(plotly::plotlyOutput("plot_aggregate"))
                      )
         
             ) # Close sidebarLayout
@@ -62,7 +63,9 @@ ui <- fluidPage(
                   width = 3
                 ),
                 
-                mainPanel(plotly::plotlyOutput("plot_contrib"))
+                mainPanel(
+                  withSpinner(plotly::plotlyOutput("plot_contrib"))
+                  )
             )
                   
          ),
@@ -79,7 +82,9 @@ ui <- fluidPage(
                         width = 3
                     ),
      
-                  mainPanel(plotly::plotlyOutput("plot_group"))
+                  mainPanel(
+                    withSpinner(plotly::plotlyOutput("plot_group"))
+                  )
                )
           
             ),
@@ -99,7 +104,9 @@ ui <- fluidPage(
                      width = 3
                     ),
                     
-                    mainPanel(plotly::plotlyOutput("plot_cores"))
+                    mainPanel(
+                      withSpinner(plotly::plotlyOutput("plot_cores"))
+                      )
                   )
                   
          )
