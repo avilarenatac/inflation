@@ -12,6 +12,6 @@ This repository contains code for importing and plotting inflation data from Bra
 ### inflation_br
 
 Shiny app structure:
-- `input/read_data.R`: imports series from the IBGE and the Brazilian Central Bank public API's.
+- `input/read_data.R`: imports series from the APIs of the IBGE and the Brazilian Central Bank
 - `load.R`: builds the functions used in the app
 - `app.R`: contains the UI and server for the app
