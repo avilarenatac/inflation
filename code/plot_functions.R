@@ -79,6 +79,15 @@ ipca_group_all <- ipca_group_all %>%
                                "Education" = "8.Educação",
                                "Communication" =  "9.Comunicação"))
 
+df <- ipca_group_all %>% 
+  select(Date = `Mês (Código)`,
+         Variable = Variável, 
+         Value = Valor,
+         category) %>%
+  mutate(Date = parse_date(Date, format = "%Y%m"))
+
+
+
 
 # Plot aggregates ---------------------------------------------------------
 plot_agg <- function(variable, start_date, end_date) {
@@ -128,42 +137,25 @@ plot_agg("12m", "2010-01-01", "2020-10-01")
 # Plot CPI by group (category) -------------------------------------------------
 plot_group <- function (group, since) {
   
-  if (str_length(group) == 2) {
-    df <- ipca_group_all %>%
-          filter(Variável %in% c("IPCA - Variação mensal"),
-                 stringr::str_detect(`Geral, grupo, subgrupo, item e subitem`, paste0("^", group)))
-  }
+  df <- df %>%
+    filter(year(Date) >= since,
+           Variable %in% c("IPCA - Variação mensal"),
+           category == group) %>%
+    mutate(Year = factor(lubridate::year(Date)))
   
-  else {
-    df <- ipca_group_all %>% 
-          filter(Variável %in% c("IPCA - Variação mensal"),
-                  !stringr::str_detect(`Geral, grupo, subgrupo, item e subitem`, "\\d{2}"),
-                  stringr::str_detect(`Geral, grupo, subgrupo, item e subitem`, paste0("^", group)))
-  }
   
-  df <- df %>% 
-       select(Date = `Mês (Código)`,
-             Variable = Variável, 
-             Value = Valor,
-             category) %>%
-        mutate(Date = parse_date(Date, format = "%Y%m")) %>%
-        filter(year(Date) >= since) %>%
-        mutate(Year = factor(lubridate::year(Date)))
-        
-   
   p <- ggplot(df, aes(x = month(Date), y = Value)) +
-        geom_line(aes(col = Year)) +
-       theme_set(theme_minimal()) +
-       labs(x = 'Month', y = 'CPI (%)',
-            title = paste0("CPI - ", df$category[1])) +
-       scale_x_continuous(breaks = 1:12) +
-       scale_color_viridis(discrete = TRUE, direction = -1) 
+    geom_line(aes(col = Year)) +
+    labs(x = 'Month', y = 'CPI (%)',
+         title = paste0("CPI - ", df$category[1])) +
+    scale_x_continuous(breaks = 1:12) +
+    scale_color_viridis(discrete = TRUE, direction = -1) 
   
   return(p)
   
 }
 
-plot_group("1", 2017)
+plot_group("Food at Home", 2017)
 
 
 # Plot CPI by group and year ----------------------------------------------
@@ -208,41 +200,34 @@ plot_group_year("6", 2017)
 
 
 # Plot contributions by group in each month -------------------------------
-ipca_group_contrib <- function(month) {
+plot_group_contrib <- function(date) {
   
-incidence_table <-  ipca_group_all %>%
-            select(Date = `Mês (Código)`,
-                   Variable = Variável, 
-                   Value = Valor,
-                   category) %>%
-            mutate(Date = parse_date(Date, format = "%Y%m")) %>%
-            filter(year(Date) == 2020, 
-                   month(Date) == month,
-                   (Variable == "IPCA - Variação mensal"| Variable == "IPCA - Peso mensal")) %>%
-            pivot_wider(names_from = Variable,
-                        values_from = Value) %>%
-            # Incidence equals monthly inflation multiplied by the weight of each category
-            mutate(Incidence = (`IPCA - Variação mensal`)*(`IPCA - Peso mensal`/100))
-          
-
+  incidence_table <-  df %>%
+    filter(Date == date) %>%
+    pivot_wider(names_from = Variable,
+                values_from = Value) %>%
+    # Incidence equals monthly inflation multiplied by the weight of each category
+    mutate(Incidence = round((`IPCA - Variação mensal`)*(`IPCA - Peso mensal`/100), 2),
+           signal = fifelse(Incidence >= 0, "positive", "negative"))
+  
+  
   ggplot(incidence_table, 
          aes(x = reorder(category, Incidence))) +
     
     # Fill each bar with Incidence by group
-    geom_col(aes(y = Incidence, fill = Incidence >= 0)) +
+    geom_col(aes(y = Incidence, fill = signal)) +
     
-    scale_fill_manual(values = c("#8B0000", "#104E8B"), guide = FALSE) +
-    
-    theme_minimal() +
-  #  theme(axis.text.x = element_text(angle = 60)) +
+    scale_fill_manual(values = c("negative" = "#8B0000", "positive"= "#104E8B"), 
+                      guide = FALSE) +
+    theme(axis.text.x = element_text(size = 0.1)) +
     labs(x = "", y = "Incidence", 
-         title = "IPCA (monthly) - Incidence by group") +
+         title = paste0("CPI Incidence by group - ", 
+                        format(incidence_table$Date[1], "%b/%y"))) +
     coord_flip()
   
 }
 
-ipca_group_contrib(10)
-
+plot_group_contrib("2020-10-01")
 
 
 
@@ -289,3 +274,16 @@ plot_cores <- function(start_date, end_date) {
 plot_cores("2015-01-01", "2019-12-01")
 
 
+
+# if (str_length(group) == 2) {
+#   df <- ipca_group_all %>%
+#     filter(Variável %in% c("IPCA - Variação mensal"),
+#            stringr::str_detect(`Geral, grupo, subgrupo, item e subitem`, paste0("^", group)))
+# }
+# 
+# else {
+#   df <- ipca_group_all %>% 
+#     filter(Variável %in% c("IPCA - Variação mensal"),
+#            !stringr::str_detect(`Geral, grupo, subgrupo, item e subitem`, "\\d{2}"),
+#            stringr::str_detect(`Geral, grupo, subgrupo, item e subitem`, paste0("^", group)))
+# }
