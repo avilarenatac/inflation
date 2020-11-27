@@ -38,9 +38,17 @@ incidence_table <- tab_ipca_2020 %>%
   
                   # Incidence equals monthly inflation multiplied by the weight of each category
                     mutate(Incidence = (`IPCA - Variação mensal`)*(`IPCA - Peso mensal`/100),
-                           Date = parse_date(Date, format = "%Y%m"))
-
-
+                           Date = parse_date(Date, format = "%Y%m"),
+                           category =  fct_recode(Group,
+                                                  "Food and Beverages" = "1.Alimentação e bebidas",
+                                                  "Housing"  =  "2.Habitação" ,
+                                                  "Furnishing, and Maint. Of House" = "3.Artigos de residência",
+                                                  "Clothing and Footwear" =  "4.Vestuário",
+                                                  "Transportation"  = "5.Transportes",
+                                                  "Health"=  "6.Saúde e cuidados pessoais",
+                                                  "Personal goods and services" = "7.Despesas pessoais" ,
+                                                  "Education" = "8.Educação",
+                                                  "Communication" =  "9.Comunicação"))
 
 
 # Plot CPI by month -------------------------------------------------------
@@ -60,11 +68,12 @@ ggplot(incidence_table %>%
                                "Clothing and Apparel", "Transportation",
                                "Healthcare", "Personal expenditures",
                                "Education", "Communication")) +
+  scale_x_date(breaks = "1 month", date_labels = "%b") +
   theme_minimal() +
   labs(x = "", y = "Incidence", 
        title = "IPCA (monthly) - Incidence by group")
 
-ggsave(paste0("./output/", "cpi_brazil_groups.png"), width = 7, height = 4, units = "in")
+#ggsave(paste0("./output/", "cpi_brazil_groups.png"), width = 7, height = 4, units = "in")
 
 
 # Other color options
@@ -80,9 +89,9 @@ tab_agg <- tab_ipca %>%
 
   # Select monthly, 12 months and year aggregates
   filter(`Variável` == "IPCA - Variação mensal" |
-                `Variável` == "IPCA - Variação acumulada em 12 meses" |
-                `Variável` ==  "IPCA - Variação acumulada no ano",
-                  ) %>%
+         `Variável` == "IPCA - Variação acumulada em 12 meses" |
+         `Variável` ==  "IPCA - Variação acumulada no ano",
+  ) %>%
   mutate(Date = parse_date(`Mês (Código)`, format = "%Y%m")) %>%
   filter(lubridate::year(Date) == 2020) %>%
   select(Date, 
@@ -106,4 +115,4 @@ ggplot(tab_agg, aes(x = Date, y = value)) +
           legend.title = element_blank())
 
    
-ggsave(paste0("./output/", "cpi_brazil_aggregates.png"), width = 7, height = 4, units = "in")
+#ggsave(paste0("./output/", "cpi_brazil_aggregates.png"), width = 7, height = 4, units = "in")
