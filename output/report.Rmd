@@ -34,26 +34,36 @@ The goal of this report is to provide an outlook on inflation numbers and patter
 \vspace{1cm}
 
 ```{r echo = FALSE, warning = FALSE, fig.width = 6, fig.height = 4}
-plot_agg("monthly", start_date = "2010-01-01")
-```
-
-```{r echo = FALSE, warning = FALSE, fig.width = 6, fig.height = 4}
-plot_agg("last_12", start_date = "2010-01-01")
+plot_agg("monthly", start_date = "2010-01-01", end_date = "2020-12-01")
 ```
 
 \vspace{1cm}
 
-The last graph provides some interesting insights. Firstly, inflation levels soared up in 2015-2016, closing 2015 with an aggregate above 10%. This surge can be traced back to a national economic crisis and decreased credibility in the Central Bank. The process was later reversed from 2017 onwards, as the CPI regained a stable trajectory and even appears to have settled at lower levels on average.
+The last graph provides some interesting insights. Firstly, inflation levels soared in 2015-2016, closing 2015 with an aggregate above 10%. This surge can be traced back to a national economic crisis and decreased credibility in the Central Bank. The process was later reversed from 2017 onwards, as the CPI regained a stable trajectory and even appears to have settled at lower levels on average.
 
 Secondly, the COVID-19 pandemic seems to have had an overall deflationary effect on the level of prices in the country, consistently with the experience of other emerging economies. Cumulative 12-month inflation reached an historic low in April 2020. However, the effect appears to have been reversed, at least in the short-run. So far, for months following 2Q 2020, prices, on average, have regained their pre-pandemic levels. 
 
 \vspace{1cm}
 ```{r echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 4}
-plot_agg("last_12", start_date = "2017-01-01")
+plot_agg("last_12", start_date = "2017-01-01", end_date = "2020-10-01")
 ```
 
-In this way, we will have a closer look at what goods and services are driving current inflation patterns.
 \vspace{1cm}
+
+By inspecting the contributions of each category to the aggregate CPI in the last three months, we observe that food prices had the highest positive contribution to inflation, followed by Transportation.
+
+```{r echo = FALSE, warning = FALSE, fig.width = 6, fig.height = 5}
+plot_group_contrib("2020-10-01")
+```
+```{r echo = FALSE, warning = FALSE}
+plot_group_contrib("2020-09-01")
+```
+
+```{r}
+plot_group_contrib("2020-08-01")
+```
+
+
 
 ## CPI by groups
 
@@ -62,56 +72,40 @@ The following graphs provide and overview of the Bazilian CPI's components at th
 \vspace{1cm}
 
 ```{r echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 4}
-plot_group("1")
+plot_group("Food and Beverages", since = 2012)
 ```
 
 \vspace{1cm}
 
 ```{r echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 4}
-plot_group("11")
+plot_group("Food at Home", since = 2012)
 ```
 
 \vspace{1cm}
 As shown in the figures, food prices on average, and in particular Food at Home, reached their highest levels for both September and October this year, considering all figures since 2012. Economists have considered that this inflationary pressure largely reflects currency depreciation - the BRL is the worst performing currency among emerging markets. As the BRL depreciates against the USD, food imports are more expensive and the competitiveness of Brazilian food exports increases.
 
 ```{r echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 4}
-plot_group("5")
+plot_group("Transportation", since = 2012)
 ```
 
 
 ```{r echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 4}
-plot_group("8")
+plot_group("Education", since = 2012)
 ```
 
 \vspace{1cm}
-On the other hand, Transportation and Education prices have remained largely deflationary and below historical averages throughout the year. Traffic in many cities has not resumed its pre-pandemic levels, as businesses shut down and laid off workers, and many others continue to adopt home-office policies. Social distancing restrictions have also hindered the regularization of schooling activities in many states.
+On the other hand, Transportation and Education prices have remained deflationary and below historical averages throughout the year, although they also have seem to recovered by the end of Q3 2020. 
+
 
 ## Other trends
 
 \vspace{1cm}
 
 ```{r echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 4}
-plot_group("2")
+plot_group("Food Away from Home", since = 2012)
 ```
 
 ```{r echo = FALSE, warning = FALSE, fig.width = 9, fig.height = 6}
-plot_group("3")
-```
-
-```{r echo = FALSE, warning = FALSE, fig.width = 9, fig.height = 6}
-plot_group("4")
-```
-
-```{r echo = FALSE, warning = FALSE, fig.width = 9, fig.height = 6}
-plot_group("6")
-```
-
-
-```{r echo = FALSE, warning = FALSE, fig.width = 9, fig.height = 6}
-plot_group("7")
-```
-
-```{r echo = FALSE, warning = FALSE, fig.width = 9, fig.height = 6}
-plot_group("9")
+plot_group("Health", since = 2012)
 ```
 
