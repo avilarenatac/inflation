@@ -130,3 +130,18 @@ cores_all <- cores_nest %>%
 # Unnest
 cores_df <- unnest(cores_all, series_12m)
 
+cores_df_wmean <- cores_df %>% group_by(date) %>% mutate(mean_cores = mean(core_12m, na.rm = T))
+
+cores_df_wmean %>% 
+  filter(date >= "2010-01-01", date <= "2020-10-01")  %>%
+  
+  ggplot(aes(x = date, y = core_12m)) +
+  geom_line(aes(col = .id), linetype = "dashed") + 
+  geom_line(aes(y = mean_cores), size = 1) +
+  scale_color_manual(values=c("darkblue", "#9E1B32", "#58595B", "#482677FF", "#7B68EE", "black")) +
+  scale_x_date(breaks = "6 months", date_labels = "%b %y") +
+  theme(axis.text.x = element_text(angle = 60), legend.title = element_blank()) +
+  labs(x = '', y = '', title = "CPI cores (12m)")
+
+
+
