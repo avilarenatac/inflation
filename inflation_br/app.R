@@ -28,6 +28,7 @@ ui <- fluidPage(
 
     # Navbar page with two tabs
     navbarPage(" ",
+#    theme = bslib::bs_theme(version = 4, bootswatch = "litera"),
         
          tabPanel("CPI", 
             sidebarLayout(
