@@ -1,15 +1,24 @@
 
 # Packages ----------------------------------------------------------------
+library(tidyverse)
 library(lubridate)
 library(zoo)
 library(data.table)
 library(stringr)
+library(tseries)
 
 
 # LOAD DATA ------------------------------------------------------------- 
 
 # Import CPI aggregates --------------------------------------------------
 ipca <- sidrar::get_sidra(api = "/t/1737/n1/all/v/63,2265/p/all/d/v63%202,v2265%202")
+
+# Corrections
+ipca_table <- ipca %>%
+                select(Date = `Mês (Código)`,
+                       Variable = Variável, 
+                       Value = Valor) %>%
+                mutate(Date = parse_date(Date, format = "%Y%m"))
 
 
 # Import CPI groups since 2012
@@ -107,7 +116,8 @@ infl_target[(year(Date) == 2000), lower := 8]
 
 # Import inflation cores series --------------------------------------------------
 # 11427 # EX0,  27839 # EX3, 4466  # MS, # 16122 # DP, # 28750 # P55
-ipca_cores <- rbcb::get_series(code = list(core_series = 11427, core_series = 27839, core_series= 4466,
+ipca_cores <- rbcb::get_series(code = list(core_series = 11427, core_series = 27839, 
+                                           core_series= 4466,
                                            core_series = 16122, core_series = 28750))
 names(ipca_cores) <- c("EX0", "EX3", "MS", "DP", "P55")
 
@@ -119,29 +129,18 @@ cores_nest <- coreslist %>% group_by(.id) %>% nest()
 
 core_12m <- function(x) {
   x %>%
-    mutate(core_12m = rollsum(x[, "core_series"], k = 12, align = 'right', fill = 0))
-  
+    mutate(
+      core_12m = rollsum(x[, "core_series"], k = 12, 
+                         align = 'right', fill = 0)
+      )
 }
 
-cores_all <- cores_nest %>% 
-  mutate(series_12m = map(.x = data, .f = core_12m))
+# Return to df format
+cores_df <- cores_nest %>% 
+  mutate(series_12m = map(.x = data, .f = core_12m)) %>%
+  unnest(cols = series_12m) %>% select(-data)
 
-
-# Unnest
-cores_df <- unnest(cores_all, series_12m)
-
-cores_df_wmean <- cores_df %>% group_by(date) %>% mutate(mean_cores = mean(core_12m, na.rm = T))
-
-cores_df_wmean %>% 
-  filter(date >= "2010-01-01", date <= "2020-10-01")  %>%
-  
-  ggplot(aes(x = date, y = core_12m)) +
-  geom_line(aes(col = .id), linetype = "dashed") + 
-  geom_line(aes(y = mean_cores), size = 1) +
-  scale_color_manual(values=c("darkblue", "#9E1B32", "#58595B", "#482677FF", "#7B68EE", "black")) +
-  scale_x_date(breaks = "6 months", date_labels = "%b %y") +
-  theme(axis.text.x = element_text(angle = 60), legend.title = element_blank()) +
-  labs(x = '', y = '', title = "CPI cores (12m)")
-
-
-
+# Add mean of cores
+cores_mean <- cores_df %>% 
+                group_by(date) %>% 
+                summarize(mean_cores = mean(core_12m, na.rm = T))

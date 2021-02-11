@@ -17,8 +17,11 @@ library(shinycssloaders)
 source("load.R", encoding = "UTF-8")
 
 
+
 # app ---------------------------------------------------------------------
 ui <- fluidPage(
+  
+  
 
     # Application title
     titlePanel("Inflation Data - Brazil"),
@@ -33,9 +36,9 @@ ui <- fluidPage(
                     dateRangeInput("dates",
                                     "Select date range",
                                      start = "2016-01-01",
-                                     end   = "2020-01-01",
+                                     end   = last(ipca_table$Date),
                                      min   = "1990-01-01",
-                                     max   = "2020-12-01"),
+                                     max   = last(ipca_table$Date)),
                    
                      conditionalPanel(condition = "input.variable != 'monthly'", 
                                       checkboxInput("show_target", "Show inflation target",
@@ -75,10 +78,12 @@ ui <- fluidPage(
                   sidebarPanel(
      
                         selectInput("group", "Select CPI category",
-                                    choices = levels(ipca_group_all$category)),
+                                    choices = levels(ipca_group_all$category)
+                                    ),
      
                         selectInput("since", "Select first year",
-                                    choices = c(2012:2020)),
+                                    choices = c(2012:year(last(df$Date)))
+                                    ),
                         width = 3
                     ),
      
@@ -96,11 +101,11 @@ ui <- fluidPage(
                      dateRangeInput("dates_cores",
                                     "Select date range",
                                      start = "2016-01-01",
-                                     end   = "2020-01-01",
+                                     end   = last(cores_df$Date),
                                      min   = "1990-01-01",
-                                     max   = "2020-12-01"),
-                     checkboxInput("show_target_core", "Show inflation target",
-                                   value = FALSE),
+                                     max   = last(cores_df$Date)),
+                     checkboxInput("show_target_core", "Show inflation target", value = FALSE),
+                     checkboxInput("show_core_mean", "Show mean of cores", value = FALSE),
                      width = 3
                     ),
                     
@@ -111,7 +116,8 @@ ui <- fluidPage(
                   
          )
       ) # Close navbarPage  
-)
+  ) # Close fluidPage
+
 
 
 
@@ -152,9 +158,10 @@ server <- function(input, output) {
         })
         
         output$plot_cores <- plotly::renderPlotly({
-            p <-  plot_cores(input$dates_cores[1], input$dates_cores[2], input$show_target_core)
+            p <-  plot_cores(input$dates_cores[1], input$dates_cores[2], 
+                             input$show_target_core, input$show_core_mean)
             
-            p %>% ggplotly(., tooltip = "y",
+            p %>% ggplotly(., tooltip = "text",
                            height = 450, width = 700) %>%
               layout(xaxis = list(showline = TRUE),
                      yaxis = list(showline = TRUE))
