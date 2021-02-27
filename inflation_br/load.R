@@ -55,7 +55,6 @@ plot_agg <- function(variable, start_date, end_date, target = FALSE) {
   
   return(p)
   
-  
 }
 
 plot_agg("12m", "2016-01-01", "2020-01-01", target = TRUE)
@@ -87,9 +86,7 @@ plot_group <- function (group, since) {
 plot_group("Food at Home", 2018)
 
 
-
 # Plot contributions by groups --------------------------------------------
-
 plot_group_contrib <- function(date) {
   
   incidence_table <-  df %>%
@@ -115,9 +112,6 @@ plot_group_contrib <- function(date) {
     coord_flip()
   
 }
-
-plot_group_contrib("2020-04-01")
-
 
 
 # Plot Cores function -----------------------------------------------------
@@ -167,4 +161,4 @@ plot_cores("2015-01-01", "2019-12-01", show_target = TRUE, show_mean = FALSE) %>
 
 
 # Improve MEAN of cores argument: do not show others when plotting mean?
-  # How to "hide" and not reload/create a new plot?
+# How to "hide" and not reload/create a new plot?

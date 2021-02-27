@@ -27,8 +27,8 @@ ui <- fluidPage(
     titlePanel("Inflation Data - Brazil"),
 
     # Navbar page with two tabs
-    navbarPage(" ",
-#    theme = bslib::bs_theme(version = 4, bootswatch = "litera"),
+   navbarPage(" ",
+  # theme = bslib::bs_theme(version = 4, bootswatch = "cerulean"),
         
          tabPanel("CPI", 
             sidebarLayout(
