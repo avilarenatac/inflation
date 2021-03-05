@@ -62,14 +62,14 @@ ggplot(incidence_table %>%
   # Draw line for aggregate result
   geom_line(data = subset(incidence_table, Group == "Índice geral"),
             aes(y = Incidence)) +
-  scale_fill_brewer(palette = "PuBu", 
+  scale_fill_brewer(palette = "Blues", 
                     # Translate Portuguese labels to English
                     labels = c("Food and Beverages", "Housing", "Residency",
                                "Clothing and Apparel", "Transportation",
                                "Healthcare", "Personal expenditures",
                                "Education", "Communication")) +
   scale_x_date(breaks = "1 month", date_labels = "%b") +
-  theme_minimal() +
+#  theme_minimal() +
   labs(x = "", y = "Incidence", 
        title = "IPCA (monthly) - Incidence by group")
 
