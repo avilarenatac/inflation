@@ -11,17 +11,18 @@ library(shiny)
 library(tidyverse)
 library(plotly)
 library(shinycssloaders)
+library(bslib)
 
 
 # source ------------------------------------------------------------------
 source("load.R", encoding = "UTF-8")
 
 
-
 # app ---------------------------------------------------------------------
 ui <- fluidPage(
-  
-  
+   
+     # Application theme
+   # theme = bs_theme(version = 4, bootswatch = "cosmo"),
 
     # Application title
     titlePanel("Inflation Data - Brazil"),
@@ -121,21 +122,21 @@ ui <- fluidPage(
 
 
 
-
 # Define server logic 
 server <- function(input, output) {
 
-       output$plot_aggregate<- plotly::renderPlotly({
-            
-           p <- plot_agg(input$variable, input$dates[1], input$dates[2], input$show_target)
-            
-           p %>%  ggplotly(., tooltip = "y", width = 700, height = 450) %>%
-                  layout(xaxis = list(showline = TRUE),
-                         yaxis = list(showline = TRUE))
-        
-    })
+     output$plot_aggregate <-  plotly::renderPlotly({
     
-        
+          plot_agg(input$variable, input$dates[1], input$dates[2], input$show_target) %>% 
+            ggplotly(., tooltip = "text", width = 700, height = 450) %>%
+            layout(xaxis = list(showline = TRUE),
+                   yaxis = list(showline = TRUE))
+          
+          }) 
+     
+     #%>% bindCache(input$variable, input$dates[1], input$dates[2], input$show_target)
+     
+     
         output$plot_contrib <- plotly::renderPlotly({
           
             p <- plot_group_contrib(input$date_contrib)
@@ -145,7 +146,7 @@ server <- function(input, output) {
                          yaxis = list(showline = TRUE)) %>%
                   hide_legend()
           
-    })
+         })
     
     
         output$plot_group <- plotly::renderPlotly({
@@ -158,6 +159,7 @@ server <- function(input, output) {
                          yaxis = list(showline = TRUE))
         })
         
+        
         output$plot_cores <- plotly::renderPlotly({
             p <-  plot_cores(input$dates_cores[1], input$dates_cores[2], 
                              input$show_target_core, input$show_core_mean)
@@ -167,7 +169,7 @@ server <- function(input, output) {
               layout(xaxis = list(showline = TRUE),
                      yaxis = list(showline = TRUE))
           
-          })
+          }) 
 
 }
 

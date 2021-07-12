@@ -18,7 +18,7 @@ ipca_table <- ipca %>%
                 select(Date = `Mês (Código)`,
                        Variable = Variável, 
                        Value = Valor) %>%
-                mutate(Date = parse_date(Date, format = "%Y%m"))
+                mutate(Date = readr::parse_date(Date, format = "%Y%m"))
 
 
 # Import CPI groups since 2012
@@ -50,8 +50,7 @@ df <- ipca_group_all %>%
          Variable = Variável, 
          Value = Valor,
          category) %>%
-  mutate(Date = parse_date(Date, format = "%Y%m"))
-
+  mutate(Date = readr::parse_date(Date, format = "%Y%m"))
 
 
 
@@ -74,7 +73,8 @@ infl_target <- infl_target %>%
 infl_target <- data.table(infl_target) # makes following operations faster
 
 
-# Define upper and lower bounds for yearly target as announced by the Central Bank
+# Define upper and lower bounds for yearly target as announced by the BCB
+# https://www.bcb.gov.br/controleinflacao/historicometas
 infl_target[, upper := 6.5]
 infl_target[, lower := 2.5]
 

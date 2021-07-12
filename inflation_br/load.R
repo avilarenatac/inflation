@@ -36,7 +36,8 @@ plot_agg <- function(variable, start_date, end_date, target = FALSE) {
   
   
   p <- df  %>%
-        ggplot(., aes(x = Date)) +
+        ggplot(., aes(x = Date, group = 1, 
+                      text = paste('Date:', format(Date, "%b %y"), '<br>Value: ', Value))) +
         scale_x_date(breaks = "6 months", date_labels = "%b %y") +
         geom_line(aes(y = Value), col = "#003B77", size = 0.5) +
         geom_point(aes(y = Value), col = "#003B77", size = 0.75, shape = 1) +
@@ -57,7 +58,7 @@ plot_agg <- function(variable, start_date, end_date, target = FALSE) {
   
 }
 
-plot_agg("12m", "2016-01-01", "2020-01-01", target = TRUE)
+plot_agg("12m", "2016-01-01", "2020-01-01", target = TRUE) %>% ggplotly(tooltip = "text")
 
 
 
@@ -126,7 +127,7 @@ plot_cores <- function(start_date, end_date, show_target, show_mean) {
   
     p <- ggplot(cores_df, aes(x = date, y = core_12m)) +
           geom_line(aes(col = .id, group = 1,
-                        text = paste0(.id, ": ", core_12m))) + 
+                        text = paste0(.id, ": ", core_12m, "<br>Date: ", format(date, "%b %y")))) + 
           scale_color_manual(values=c("darkblue", "#9E1B32", "#58595B", "#482677FF", "#7B68EE")) +
           scale_x_date(breaks = "6 months", date_labels = "%b %y") +
           theme(axis.text.x = element_text(angle = 60), legend.title = element_blank()) +
@@ -134,11 +135,8 @@ plot_cores <- function(start_date, end_date, show_target, show_mean) {
 
     
   if(show_mean == TRUE) {
-    cores_df <- left_join(cores_df, cores_mean, c("date" = "date"))
-    
-    p <- cores_df %>%
-      ggplot(aes(x = date, y = mean_cores)) +
-      geom_line(aes(group = 1, text = paste0("Mean of cores: ", mean_cores)), 
+    p <- ggplot(cores_mean, aes(x = date, y = mean_cores)) +
+      geom_line(aes(group = 1, text = paste0("Mean of cores: ", mean_cores, "<br>Date: ", format(date, "%b %y"))), 
                 col = "#003B77", size = 0.5) +
       scale_x_date(breaks = "6 months", date_labels = "%b %y") +
       theme(axis.text.x = element_text(angle = 60), legend.title = element_blank()) +
@@ -157,8 +155,12 @@ plot_cores <- function(start_date, end_date, show_target, show_mean) {
 }
 
 
-plot_cores("2015-01-01", "2019-12-01", show_target = TRUE, show_mean = FALSE) %>% ggplotly(., tooltip = "text")
+plot_cores("2015-01-01", "2019-12-01", show_target = TRUE, show_mean = FALSE) %>% 
+  ggplotly(., tooltip = "text")
 
+# How to "hide" and not reload/create a new plot? - ?
 
-# Improve MEAN of cores argument: do not show others when plotting mean?
-# How to "hide" and not reload/create a new plot?
+# Improvements:
+  # - Add date label to plots - add tooltip ggplotly text, needs more arguments - OK
+  # - Core series: add monthly graph, similar to first tabPanel with "monthly" and "12m" options in a dropdown menu
+  # - Figure out how to improve cache using bindCache from Shiny 1.6 version
