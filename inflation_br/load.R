@@ -135,7 +135,9 @@ plot_cores <- function(start_date, end_date, show_target, show_mean) {
 
     
   if(show_mean == TRUE) {
-    p <- ggplot(cores_mean, aes(x = date, y = mean_cores)) +
+    cores_df <- left_join(cores_df, cores_mean)
+     
+    p <- ggplot(cores_df, aes(x = date, y = mean_cores)) +
       geom_line(aes(group = 1, text = paste0("Mean of cores: ", mean_cores, "<br>Date: ", format(date, "%b %y"))), 
                 col = "#003B77", size = 0.5) +
       scale_x_date(breaks = "6 months", date_labels = "%b %y") +
@@ -158,9 +160,9 @@ plot_cores <- function(start_date, end_date, show_target, show_mean) {
 plot_cores("2015-01-01", "2019-12-01", show_target = TRUE, show_mean = FALSE) %>% 
   ggplotly(., tooltip = "text")
 
+
 # How to "hide" and not reload/create a new plot? - ?
 
 # Improvements:
-  # - Add date label to plots - add tooltip ggplotly text, needs more arguments - OK
   # - Core series: add monthly graph, similar to first tabPanel with "monthly" and "12m" options in a dropdown menu
   # - Figure out how to improve cache using bindCache from Shiny 1.6 version
