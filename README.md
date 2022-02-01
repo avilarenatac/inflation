@@ -1,10 +1,9 @@
 ### Brazilian Inflation data
 
-This repository contains code for importing and plotting inflation data from Brazil.
+This repository contains code for a Shiny app that imports and plots inflation data from Brazil.
 
 #### Content
-- `README.md`: this file, summarizes the contents of the repository
-- `/code`: contains scripts for importing, processing and plotting the data
+- `README.md`: this file, summarizes the contents of the folder
 - `/inflation_br`: shiny app with data visualizations and interactive options
 
 
