@@ -84,7 +84,8 @@ ui <- fluidPage(
                                     ),
      
                         selectInput("since", "Select first year",
-                                    choices = c(2012:year(last(df$Date)))
+                                    choices = c(2012:year(last(df$Date))),
+                                    selected = "2016"
                                     ),
                         width = 3
                     ),

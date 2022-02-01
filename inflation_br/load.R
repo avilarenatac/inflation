@@ -36,11 +36,14 @@ plot_agg <- function(variable, start_date, end_date, target = FALSE) {
   
   
   p <- df  %>%
-        ggplot(., aes(x = Date, group = 1, 
-                      text = paste('Date:', format(Date, "%b %y"), '<br>Value: ', Value))) +
+        ggplot(., aes(x = Date, y = Value)) +
         scale_x_date(breaks = "6 months", date_labels = "%b %y") +
-        geom_line(aes(y = Value), col = "#003B77", size = 0.5) +
-        geom_point(aes(y = Value), col = "#003B77", size = 0.75, shape = 1) +
+        geom_line(col = "#003B77", size = 0.5) +
+        geom_point(aes(group = 1, 
+                       # Add text to geom_point for tooltip display
+                       text = paste('Date:', format(Date, "%b %y"), '<br>Value: ', Value)
+                       ), 
+                   col = "#003B77", size = 0.75, shape = 1) +
         theme(axis.text.x = element_text(angle = 60)) +
         labs(x = '', y = '', title = plot_title)
     
@@ -49,17 +52,18 @@ plot_agg <- function(variable, start_date, end_date, target = FALSE) {
   
   if(variable != 'monthly' & target == TRUE) {
     
-      p <- p + geom_line(aes(y = target), linetype = "solid") +
-               geom_line(aes(y = upper), linetype = "dashed") +
-               geom_line(aes(y = lower), linetype = "dashed") 
+    p <- p + geom_line(aes(y = target, group = 1,
+                           text = paste0("Center of target: ", target)), linetype = "solid") +
+             geom_line(aes(y = upper, group =1 , text = paste0("Upper bound: ", upper)), linetype = "dashed") +
+             geom_line(aes(y = lower, group = 1, text = paste0("Lower bound: ", lower)), linetype = "dashed") 
   }
-  
+
   return(p)
   
 }
 
-plot_agg("12m", "2016-01-01", "2020-01-01", target = TRUE) %>% ggplotly(tooltip = "text")
 
+# plot_agg("12m", "2016-01-01", "2020-01-01", target = TRUE) %>% ggplotly(tooltip = "text")
 
 
 # Plot CPI by group (category) -------------------------------------------------
@@ -161,8 +165,8 @@ plot_cores <- function(start_date, end_date, show_target, show_mean) {
   if(show_target == TRUE) {
   p <- p + geom_line(aes(y = target, group = 1, 
                          text = paste0("Center of target: ", target)), linetype = "solid") +
-    geom_line(aes(y = upper, group = 1, text = paste0("Upper bound: ", target)), linetype = "dashed") +
-    geom_line(aes(y = lower, group = 1, text = paste0("Lower bound: ", target)), linetype = "dashed") 
+    geom_line(aes(y = upper, group = 1, text = paste0("Upper bound: ", upper)), linetype = "dashed") +
+    geom_line(aes(y = lower, group = 1, text = paste0("Lower bound: ", lower)), linetype = "dashed") 
   }
   
   return(p)
@@ -176,10 +180,11 @@ plot_cores("2015-01-01", "2019-12-01", show_target = TRUE, show_mean = FALSE) %>
   # - Core series: add monthly graph, similar to first tabPanel with "monthly" and "12m" options in a dropdown menu
   # - Improve speed with cache by using bindCache from Shiny 1.6 version
 
-cores_df %>% filter(date >= "2016-01-01", .id == "DP") %>%
-ggplot(., aes(x = date)) +
-  scale_x_date(breaks = "6 months", date_labels = "%b %y") +
-  geom_line(aes(y = core_series), col = "#003B77", size = 0.5) +
-  geom_point(aes(y = core_series), col = "#003B77", size = 0.75, shape = 1) +
-  theme(axis.text.x = element_text(angle = 60)) +
-  labs(x = '', y = '')
+# cores_df %>% 
+#   filter(date >= "2012-01-01", .id == "DP") %>%
+#     ggplot(., aes(x = date)) +
+#       scale_x_date(breaks = "6 months", date_labels = "%b %y") +
+#       geom_line(aes(y = core_series), col = "#003B77", size = 0.5) +
+#       geom_point(aes(y = core_series), col = "#003B77", size = 0.75, shape = 1) +
+#       theme(axis.text.x = element_text(angle = 60)) +
+#       labs(x = '', y = '')
