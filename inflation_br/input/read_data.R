@@ -93,6 +93,15 @@ infl_target[(year(Date) == 2020), lower := 2.5]
 infl_target[(year(Date) == 2021), upper := 5.25]
 infl_target[(year(Date) == 2021), lower := 2.25]
 
+infl_target[(year(Date) == 2022), upper := 5.00]
+infl_target[(year(Date) == 2022), lower := 2.00]
+
+infl_target[(year(Date) == 2023), upper := 4.75]
+infl_target[(year(Date) == 2023), lower := 1.75]
+
+infl_target[(year(Date) == 2024), upper := 4.50]
+infl_target[(year(Date) == 2024), lower := 1.50]
+
 infl_target[(year(Date) == 2005), upper := 7]
 infl_target[(year(Date) == 2005), lower := 2]
 
