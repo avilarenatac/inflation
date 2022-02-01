@@ -96,16 +96,28 @@ plot_group_contrib <- function(date) {
                   values_from = Value) %>%
       # Incidence equals monthly inflation multiplied by the weight of each category
       mutate(Incidence = round((`IPCA - Variação mensal`)*(`IPCA - Peso mensal`/100), 2),
-             signal = fifelse(Incidence >= 0, "positive", "negative"))
-    
+             signal = fifelse(Incidence > 0, "positive", fifelse(Incidence < 0, "negative", "zero"))
+             ) 
   
-    ggplot(incidence_table, aes(x = reorder(category, Incidence))) +
-    
+    ggplot(incidence_table, 
+           aes(x = reorder(category, Incidence), y = Incidence,
+               group = 1,
+               text = paste0("Incidence: ", Incidence) 
+               # text = fifelse(Incidence != 0, paste('Incidence:', Incidence), paste('Incidence:', 0))     
+           )) +
+      
     # Fill each bar with Incidence by group
-    geom_col(aes(y = Incidence, fill = signal)) +
-    
-    scale_fill_manual(values = c("negative" = "#8B0000", "positive"= "#104E8B"), 
-                      guide = FALSE) +
+    geom_col(aes(fill = signal, color = signal
+              )) +
+    scale_fill_manual(values = c("negative" = "#8B0000", 
+                                 "positive" = "#104E8B",
+                                  "zero" = "black"), 
+                      guide = "none") +
+    scale_color_manual(values = c("negative" = "#8B0000", 
+                                  "positive" = "#104E8B",
+                                   "zero" = "black"), 
+                        guide = "none") +
+   #  geom_text(aes(y = Incidence, label=if_else(Incidence==0, "0", ""))) +
     theme(axis.text.x = element_text(size = 0.1)) +
     labs(x = "", y = "Incidence", 
          title = paste0("CPI Incidence by group - ", 

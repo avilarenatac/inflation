@@ -141,7 +141,7 @@ server <- function(input, output) {
           
             p <- plot_group_contrib(input$date_contrib)
             
-            p %>% ggplotly(., tooltip = "y", width = 700, height = 450) %>%
+            p %>% ggplotly(., tooltip = "text", width = 700, height = 450) %>%
                   layout(xaxis = list(showline = TRUE),
                          yaxis = list(showline = TRUE)) %>%
                   hide_legend()
